@@ -65,6 +65,12 @@ class EMAModel:
                 if isinstance(param, dict):
                     raise RuntimeError('Dict parameter not supported')
 
+                if ema_param.shape != param.shape:
+                    continue
+
+                if isinstance(param, dict):
+                    raise RuntimeError('Dict parameter not supported')
+
                 if isinstance(module, _BatchNorm):
                     # skip batchnorms
                     ema_param.copy_(param.to(dtype=ema_param.dtype).data)

@@ -116,6 +116,7 @@ class Upsample(nn.Module):
                                 padding=padding)
 
     def forward(self, x):
+
         assert x.shape[1] == self.channels
         if self.dims == 3:
             x = F.interpolate(x, (x.shape[2], x.shape[3] * 2, x.shape[4] * 2),

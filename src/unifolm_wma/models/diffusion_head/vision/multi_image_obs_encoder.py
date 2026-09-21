@@ -1,6 +1,7 @@
 import copy
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 import torchvision
 import json
 import os
@@ -152,17 +153,23 @@ class MultiImageObsEncoder(ModuleAttrMixin):
         ##NOTE add spatial softmax
         self.use_spatial_softmax = use_spatial_softmax
         if use_spatial_softmax and not use_dinoSiglip:
-            model = nn.Sequential(
-                key_model_map['image'].conv1,
-                key_model_map['image'].bn1,
-                key_model_map['image'].relu,
-                key_model_map['image'].maxpool,
-                key_model_map['image'].layer1,
-                key_model_map['image'].layer2,
-                key_model_map['image'].layer3,
-                key_model_map['image'].layer4,
-            )
-            key_model_map['image'] = model
+            class TruncatedResNet(nn.Module):
+                def __init__(self, resnet):
+                    super().__init__()
+                    self.resnet = resnet 
+                    
+                def forward(self, x):
+                    x = self.resnet.conv1(x)
+                    x = self.resnet.bn1(x)
+                    x = self.resnet.relu(x)
+                    x = self.resnet.maxpool(x)
+                    x = self.resnet.layer1(x)
+                    x = self.resnet.layer2(x)
+                    x = self.resnet.layer3(x)
+                    x = self.resnet.layer4(x)
+                    return x
+
+            key_model_map['image'] = TruncatedResNet(key_model_map['image'])
             input_shape = self.output_shape(resnet_output_shape=True)
             self.spatial_softmax = SpatialSoftmax(input_shape,
                                                   num_kp=spatial_softmax_kp)

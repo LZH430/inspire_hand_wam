@@ -24,8 +24,8 @@ model:
     freeze_embedder: True
     n_obs_steps_imagen: 2
     n_obs_steps_acting: 2
-    agent_state_dim: 16
-    agent_action_dim: 16
+    agent_state_dim: 26
+    agent_action_dim: 26
     decision_making_only: True
 
     ###################### DP Related 
@@ -59,7 +59,7 @@ model:
         prediction_type: epsilon
 
     dp_optimizer_config:
-      target: torch.optim.AdamW
+      target: deepspeed.ops.adam.DeepSpeedCPUAdam
       params:
         lr: 1.0e-4
         betas: [0.95, 0.999]
@@ -222,7 +222,7 @@ data:
     test:
       target: unifolm_wma.data.wma_data.WMAData
       params:
-        data_dir: '/path/to/the/dataset/directory/that/contains/the/meta/folder/of/the/testing/case/under/a/transitions/folder' # e.g., /path/to/unifolm-world-model-action/examples/world_model_interaction_prompts
+        data_dir: '/run/determined/workdir/home/unifolm-world-model-action/simulationdata' # e.g., /path/to/unifolm-world-model-action/examples/world_model_interaction_prompts
         video_length: ${model.params.wma_config.params.temporal_length}
         frame_stride: 2
         load_raw_resolution: True
@@ -237,4 +237,5 @@ data:
         max_action_dim: ${model.params.agent_action_dim}
         max_state_dim: ${model.params.agent_state_dim}
     dataset_and_weights: 
-      unitree_g1_pack_camera: 1.0
+      metal_part_sort_v5: 0.5
+      metal_part_sort_v6: 0.5

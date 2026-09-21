@@ -2,6 +2,7 @@ import logging
 import torch
 import torch.nn as nn
 import einops
+import copy
 
 from einops import rearrange, repeat
 from typing import Union
@@ -470,10 +471,15 @@ class ConditionalUnet1D(nn.Module):
                     w //= 2**ind
                 net = SpatialSoftmax((context_dim, h, w), context_dim)
                 self.spatial_softmax_blocks.append(net)
-            self.spatial_softmax_blocks.append(net)
-            self.spatial_softmax_blocks += self.spatial_softmax_blocks[
-                0:4][::-1]
-
+            self.spatial_softmax_blocks.append(
+                copy.deepcopy(
+                    self.spatial_softmax_blocks[-1]
+                )
+            )
+            for block in self.spatial_softmax_blocks[0:4][::-1]:
+                self.spatial_softmax_blocks.append(
+                    copy.deepcopy(block)
+                )
         self.diffusion_step_encoder = diffusion_step_encoder
         self.local_cond_encoder = local_cond_encoder
         self.up_modules = up_modules

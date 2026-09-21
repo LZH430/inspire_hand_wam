@@ -54,8 +54,8 @@ class WMAData(Dataset):
         normalization_mode='min_max',
         individual_normalization=False,
         n_obs_steps=1,
-        max_action_dim=7,
-        max_state_dim=7,
+        max_action_dim=32,
+        max_state_dim=32,
     ):
         self.meta_path = meta_path
         self.data_dir = data_dir

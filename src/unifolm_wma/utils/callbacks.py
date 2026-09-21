@@ -104,16 +104,8 @@ class ImageLogger(Callback):
             else:
                 pass
 
-    @rank_zero_only
     def log_batch_imgs(self, pl_module, batch, batch_idx, split="train"):
         """ generate images, then save and log to tensorboard """
-        # Update fps and fs statistics
-        batch_fps = batch['fps'].tolist()
-        batch_fs = batch['frame_stride'].tolist()
-        for num in batch_fps:
-            self.fps_stat[num] = self.fps_stat.get(num, 0) + 1
-        for num in batch_fs:
-            self.fs_stat[num] = self.fs_stat.get(num, 0) + 1
         skip_freq = self.batch_freq if split == "train" else 5
         ## NOTE HAND CODE
         self.count_data += 12.5 * 2
@@ -123,12 +115,21 @@ class ImageLogger(Callback):
             is_train = pl_module.training
             if is_train:
                 pl_module.eval()
-            torch.cuda.empty_cache()
+                
             with torch.no_grad():
                 log_func = pl_module.log_images
                 batch_logs = log_func(batch,
                                       split=split,
                                       **self.log_images_kwargs)
+
+            if pl_module.global_rank == 0:
+                batch_fps = batch['fps'].tolist()
+                batch_fs = batch['frame_stride'].tolist()
+                for num in batch_fps:
+                    self.fps_stat[num] = self.fps_stat.get(num, 0) + 1
+                for num in batch_fs:
+                    self.fs_stat[num] = self.fs_stat.get(num, 0) + 1
+
                 # Log fps and fs statistics
                 with open(self.save_stat_dir + '/fps_fs_stat.json',
                           'w') as file:
@@ -139,9 +140,26 @@ class ImageLogger(Callback):
                               file,
                               indent=4)
 
+            # Preserve diffusion latent values; image logging would clamp/rescale them.
+            if self.log_images_kwargs.get("latent_only", False):
+                latent_dir = os.path.join(pl_module.logdir, "latents", split)
+                os.makedirs(latent_dir, exist_ok=True)
+                filename = "gs{}_ep{}_idx{}_rank{}.pt".format(
+                    pl_module.global_step, pl_module.current_epoch,
+                    batch_idx, pl_module.global_rank)
+                payload = {
+                    key: value[:self.max_images].detach().cpu()
+                    if isinstance(value, torch.Tensor) else value
+                    for key, value in batch_logs.items()
+                }
+                torch.save(payload, os.path.join(latent_dir, filename))
+                if is_train:
+                    pl_module.train()
+                return
+
             batch_logs = prepare_to_log(batch_logs, self.max_images,
                                         self.clamp)
-            torch.cuda.empty_cache()
+
 
             filename = "ep{}_idx{}_rank{}".format(pl_module.current_epoch,
                                                   batch_idx,

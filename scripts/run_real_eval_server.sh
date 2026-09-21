@@ -1,10 +1,11 @@
 model_name=testing
-ckpt=/path/to/model/checkpoint
+ckpt=/run/determined/workdir/home/unifolm-world-model-action/step47200.ckpt
 config=configs/inference/world_model_decision_making.yaml
 seed=123
-res_dir="path/to/results/directory"
+res_dir="/run/determined/workdir/home/unifolm-world-model-action/results"
 datasets=(
-    "unitree_g1_pack_camera"
+    "metal_part_sort_v5"
+    "metal_part_sort_v6"
 )
 
 

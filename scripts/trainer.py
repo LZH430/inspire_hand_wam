@@ -1,6 +1,17 @@
 import argparse, os, datetime
+os.environ["TORCH_DYNAMO_DISABLE"] = "1"
+os.environ["TORCH_COMPILE_DISABLE"] = "1"
 import pytorch_lightning as pl
 import torch
+torch._dynamo.config.disable = True
+torch._dynamo.config.suppress_errors = True
+if hasattr(torch, 'compiler'):
+    torch.compiler.disable()
+
+def _dummy_compile(*args, **kwargs):
+    if len(args) > 0 and callable(args[0]):
+        return args[0]  
+    return lambda x: x
 
 from omegaconf import OmegaConf
 from transformers import logging as transf_logging
@@ -199,8 +210,26 @@ if __name__ == "__main__":
     logger.info("***** Running the Loop *****")
     if args.train:
         try:
-            if "strategy" in lightning_config and lightning_config[
-                    'strategy'].startswith('deepspeed'):
+            print("\n========== BEFORE DEEPSPEED ==========")
+            for n, p in model.named_parameters():
+                if any(k in n for k in [
+                    "agent_action_pos_emb",
+                    "agent_state_pos_emb",
+                    "state_projector",
+                    "action_projector"
+                ]):
+                    print(
+                        n,
+                        "shape:",
+                        p.shape,
+                        "numel:",
+                        p.numel(),
+                        "requires_grad:",
+                        p.requires_grad
+                    )
+
+
+            if "deepspeed" in str(trainer_kwargs["strategy"]).lower():
                 logger.info("<Training in DeepSpeed Mode>")
                 if trainer_kwargs['precision'] == 16:
                     with torch.cuda.amp.autocast():

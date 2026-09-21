@@ -1,0 +1,2 @@
+videoid,contentUrl,duration,data_dir,instruction,dynamic_confidence,dynamic_wording,dynamic_source_category,embodiment,fps
+0,"[""metal_part_sort_v5/observation.images.cam_external/0.png"", ""metal_part_sort_v5/observation.images.cam_left_high/0.png"", ""metal_part_sort_v5/observation.images.cam_right_wrist/0.png"", ""metal_part_sort_v5/observation.images.cam_left_wrist/0.png""]",x,metal_part_sort_v5,Pick the metal parts and sort them,x,x,x,Unitree G1 Robot with Gripper,30

@@ -14,6 +14,7 @@ import numpy as np
 import pytorch_lightning as pl
 import torch.nn.functional as F
 import logging
+import deepspeed
 
 mainlogger = logging.getLogger('mainlogger')
 
@@ -28,6 +29,7 @@ from omegaconf import OmegaConf
 from typing import Optional, Sequence, Any, Tuple, Union, List, Dict
 from collections.abc import Mapping, Iterable, Callable
 from torch import Tensor
+from deepspeed.ops.adam import DeepSpeedCPUAdam
 
 from unifolm_wma.utils.utils import instantiate_from_config
 from unifolm_wma.utils.ema import LitEma
@@ -1071,13 +1073,18 @@ class LatentDiffusion(DDPM):
 
         ## Consume more GPU memory but faster
         if not self.perframe_ae:
-            encoder_posterior = self.first_stage_model.encode(x)
+            encoder_posterior = self.first_stage_model.encode(
+                x.to(next(self.first_stage_model.parameters()).dtype)
+            )
             results = self.get_first_stage_encoding(encoder_posterior).detach()
         else:  ## Consume less GPU memory but slower
             results = []
             for index in range(x.shape[0]):
-                frame_batch = self.first_stage_model.encode(x[index:index +
-                                                              1, :, :, :])
+                frame_batch = self.first_stage_model.encode(
+                    x[index:index + 1, :, :, :].to(
+                        next(self.first_stage_model.parameters()).dtype
+                    )
+                )
                 frame_result = self.get_first_stage_encoding(
                     frame_batch).detach()
                 results.append(frame_result)
@@ -1870,8 +1877,8 @@ class LatentVisualDiffusion(LatentDiffusion):
                  image_proj_model_trainable: bool = True,
                  n_obs_steps_imagen: int = 2,
                  n_obs_steps_acting: int = 2,
-                 agent_state_dim: int = 14,
-                 agent_action_dim: int = 14,
+                 agent_state_dim: int = 26,
+                 agent_action_dim: int = 26,
                  global_emb_dim: int = 1024,
                  input_pertub: float = 0.1,
                  lr_scheduler: str = 'cosine',
@@ -2010,6 +2017,35 @@ class LatentVisualDiffusion(LatentDiffusion):
             self.model.diffusion_model.action_unet)
         self.dp_ema_model_on_device = False
         self.dp_ema = EMAModel(**config['params'], model=self.dp_ema_model)
+
+
+    def on_save_checkpoint(self, checkpoint):
+        print("=" * 80)
+        print("SAVE FULL STATE")
+        print("=" * 80)
+        checkpoint["extra_state_dict"] = {
+            k: v.detach().cpu()
+            for k,v in self.state_dict().items()
+            if (
+                "state_projector" in k
+                or "action_projector" in k
+                or "agent_state_pos_emb" in k
+                or "agent_action_pos_emb" in k
+            )
+        }
+        
+        print(
+            "extra:",
+            len(checkpoint["extra_state_dict"])
+        )
+
+    def on_load_checkpoint(self, checkpoint):
+        if "extra_state_dict" in checkpoint:
+
+            self.load_state_dict(
+                checkpoint["extra_state_dict"],
+                strict=False
+            )
 
     def _init_projectors(self):
         """
@@ -2242,6 +2278,7 @@ class LatentVisualDiffusion(LatentDiffusion):
     def log_images(self,
                    batch: Mapping[str, Any],
                    sample: bool = True,
+                   latent_only: bool = False,
                    ddim_steps: int = 50,
                    ddim_eta: float = 1.0,
                    plot_denoise_rows: bool = False,
@@ -2254,6 +2291,7 @@ class LatentVisualDiffusion(LatentDiffusion):
         Args:
             batch: Batch mapping used to form inputs/conditions.
             sample: If True, also run sampling for visualization.
+            latent_only: Return diffusion latents without VAE decoding.
             ddim_steps: Number of DDIM steps when using DDIM.
             ddim_eta: DDIM eta parameter (stochasticity).
             plot_denoise_rows: If True, include denoise progression grid.
@@ -2273,20 +2311,26 @@ class LatentVisualDiffusion(LatentDiffusion):
         use_ddim = ddim_steps is not None
         log = dict()
 
-        z, act, state, c, xrec, xc, fs, cond_x, is_sim_mode = self.get_batch_input(
+        batch_inputs = self.get_batch_input(
             batch,
             random_uncond=False,
-            return_first_stage_outputs=True,
+            return_first_stage_outputs=not latent_only,
             return_original_cond=True,
             return_fs=True,
             return_cond_frame=True,
             logging=True)
 
+        if latent_only:
+            z, act, state, c, xc, fs, cond_x, is_sim_mode = batch_inputs
+            log['latent_target'] = z
+        else:
+            z, act, state, c, xrec, xc, fs, cond_x, is_sim_mode = batch_inputs
+            log['image_condition'] = cond_x
+            log['reconst'] = xrec
+
         kwargs['x_start'] = z
 
-        N = xrec.shape[0]
-        log["image_condition"] = cond_x
-        log["reconst"] = xrec
+        N = z.shape[0]
         if is_sim_mode:
             xc = ["NULL"]
         xc_with_fs = []
@@ -2310,8 +2354,10 @@ class LatentVisualDiffusion(LatentDiffusion):
                     x0=z,
                     **kwargs)
 
-            x_samples = self.decode_first_stage(samples)
-            log["samples"] = x_samples
+            if latent_only:
+                log["latent_samples"] = samples
+            else:
+                log["samples"] = self.decode_first_stage(samples)
 
             # Log actions
             mb, mt, _ = batch['action_mask'].shape
@@ -2327,7 +2373,7 @@ class LatentVisualDiffusion(LatentDiffusion):
             state_samples = state_samples[state_mask].reshape(mb, mt, -1)
             log["state"] = torch.cat((state_target, state_samples), dim=0)
 
-            if plot_denoise_rows:
+            if plot_denoise_rows and not latent_only:
                 denoise_grid = self._get_denoise_row_from_list(z_denoise_row)
                 log["denoise_row"] = denoise_grid
 
@@ -2339,9 +2385,11 @@ class LatentVisualDiffusion(LatentDiffusion):
         lr = self.learning_rate
 
         params = [
-            param for name, param in self.model.named_parameters()
-            if not name.startswith("diffusion_model.action_unet")
-            and not name.startswith("diffusion_model.state_unet")
+            param for name, param in self.named_parameters()
+            if not name.startswith("model.diffusion_model.action_unet")
+            and not name.startswith("model.diffusion_model.state_unet")
+            and not name.startswith("dp_ema_model")
+            and not name.startswith("image_proj_model")
         ]
         params_unet_head = list(
             self.model.diffusion_model.action_unet.parameters()) + list(
@@ -2387,7 +2435,35 @@ class LatentVisualDiffusion(LatentDiffusion):
             'weight_decay':
             self.dp_optimizer_config['params']['weight_decay']
         }]
-        optimizer = torch.optim.AdamW(params_group, lr=lr)
+        optimizer = DeepSpeedCPUAdam(params_group, lr=lr)
+        print("================ optimizer check ================")
+
+        opt_ids = set()
+
+        for group in optimizer.param_groups:
+            for p in group["params"]:
+                opt_ids.add(id(p))
+
+
+        for name,p in self.named_parameters():
+
+            if any(
+                k in name for k in [
+                    "agent_action_pos_emb",
+                    "agent_state_pos_emb",
+                    "state_projector",
+                    "action_projector"
+                ]
+            ):
+                print(
+                    name,
+                    "optimizer:",
+                    id(p) in opt_ids,
+                    p.shape,
+                    p.requires_grad
+                )
+
+
 
         if self.use_scheduler:
 

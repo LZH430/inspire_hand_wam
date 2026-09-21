@@ -1,15 +1,12 @@
 model_name=testing
-ckpt=/path/to/model/checkpoint
+ckpt=/run/determined/workdir/home/unifolm-world-model-action/step47200.ckpt
 config=configs/inference/world_model_interaction.yaml
 seed=123
-res_dir="/path/to/result/directory"
+res_dir="/run/determined/workdir/home/unifolm-world-model-action/results"
 
 datasets=(
-    "unitree_z1_stackbox"
-    "unitree_z1_dual_arm_stackbox"
-    "unitree_z1_dual_arm_stackbox_v2"
-    "unitree_z1_dual_arm_cleanup_pencils"
-    "unitree_g1_pack_camera"
+    "metal_part_sort_v5"
+    "metal_part_sort_v6"
 )
 
 n_iters=(12 7 11 8 11)
@@ -29,7 +26,7 @@ for i in "${!datasets[@]}"; do
     --unconditional_guidance_scale 1.0 \
     --ddim_steps 50 \
     --ddim_eta 1.0 \
-    --prompt_dir "/path/to/unifolm-world-model-action/examples/world_model_interaction_prompts" \
+    --prompt_dir "/run/determined/workdir/home/unifolm-world-model-action/simulationdata" \
     --dataset ${dataset} \
     --video_length 16 \
     --frame_stride ${fs} \

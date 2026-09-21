@@ -87,7 +87,10 @@ def load_model_checkpoint(model: nn.Module, ckpt: str) -> nn.Module:
     if "state_dict" in list(state_dict.keys()):
         state_dict = state_dict["state_dict"]
         try:
-            model.load_state_dict(state_dict, strict=True)
+            model.load_state_dict(
+                state_dict, 
+                strict=True
+            )
         except:
             new_pl_sd = OrderedDict()
             for k, v in state_dict.items():

@@ -11,11 +11,11 @@
 
 
 # args
-name="experiment_name"
+name="inspirehand"
 config_file=configs/train/config.yaml
 
 # save root dir for logs, checkpoints, tensorboard record, etc.
-save_root="/path/to/savedir"
+save_root="/run/determined/workdir/home/unifolm-world-model-action/results"
 
 mkdir -p $save_root/$name
 
@@ -29,4 +29,4 @@ CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python3 -m torch.distributed.launch \
 --logdir $save_root \
 --devices 8 \
 --total_gpus=8 \
-lightning.trainer.num_nodes=1
+lightning.trainer.num_nodes=1 

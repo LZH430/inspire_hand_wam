@@ -1,5 +1,5 @@
 model:
-  pretrained_checkpoint: /path/to/pretrained/checkpoint
+  pretrained_checkpoint: /run/determined/workdir/home/unifolm-world-model-action/UnifoLM-WMA-0-Base/unifolm_wma_base.ckpt
   base_learning_rate: 1.0e-05
   scale_lr: False
   target: unifolm_wma.models.ddpms.LatentVisualDiffusion
@@ -31,8 +31,8 @@ model:
     freeze_embedder: True
     n_obs_steps_imagen: 2
     n_obs_steps_acting: 2
-    agent_state_dim: 16
-    agent_action_dim: 16
+    agent_state_dim: 26
+    agent_action_dim: 26
     decision_making_only: True
 
     ###################### DP Related 
@@ -66,7 +66,7 @@ model:
         prediction_type: epsilon
 
     dp_optimizer_config:
-      target: torch.optim.AdamW
+      target: deepspeed.ops.adam.DeepSpeedCPUAdam
       params:
         lr: 1.0e-4
         betas: [0.95, 0.999]
@@ -171,7 +171,7 @@ model:
         ddconfig:
           double_z: True
           z_channels: 4
-          resolution: 256
+          resolution: 128
           in_channels: 3
           out_ch: 3
           ch: 128
@@ -223,13 +223,13 @@ model:
 data:
   target: unifolm_wma.utils.data.DataModuleFromConfig
   params:
-    batch_size: 8
-    num_workers: 12
+    batch_size: 1
+    num_workers: 4
     wrap: False
     train:
       target: unifolm_wma.data.wma_data.WMAData
       params:
-        data_dir: '/path/to/training/dataset/directory'
+        data_dir: '/run/determined/workdir/home/unifolm-world-model-action/trainingdata'
         video_length: ${model.params.wma_config.params.temporal_length}
         frame_stride: 2
         load_raw_resolution: True
@@ -244,14 +244,17 @@ data:
         max_action_dim: ${model.params.agent_action_dim}
         max_state_dim: ${model.params.agent_state_dim}
     dataset_and_weights: 
-      unitree_z1_stackbox: 0.2
-      unitree_z1_dual_arm_stackbox: 0.2
-      unitree_z1_dual_arm_stackbox_v2: 0.2
-      unitree_z1_dual_arm_cleanup_pencils: 0.2
-      unitree_g1_pack_camera: 0.2
+      metal_part_sort_v5: 0.5
+      metal_part_sort_v6: 0.5
 
 lightning:
   precision: 16
+  strategy: 
+      target: pytorch_lightning.strategies.DeepSpeedStrategy
+      params:
+        stage: 3
+        offload_optimizer: True
+        offload_parameters: True
   trainer:
     benchmark: True
     accumulate_grad_batches: 2
@@ -265,7 +268,7 @@ lightning:
     model_checkpoint:
       target: pytorch_lightning.callbacks.ModelCheckpoint
       params:
-        every_n_train_steps: 1000
+        every_n_train_steps: 100
         filename: "{epoch}-{step}"
         save_weights_only: True
     metrics_over_trainsteps_checkpoint:
@@ -281,6 +284,7 @@ lightning:
         to_local: False
         max_images: 8
         log_images_kwargs:
+          latent_only: True
           ddim_steps: 16
           unconditional_guidance_scale: 1.0
           timestep_spacing: uniform_trailing
