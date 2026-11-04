@@ -1,11 +1,11 @@
 # UnifoLM-World Model Action for Unitree G1+Inspire hand
+<div align="justify">
+    <b>UnifoLM-World Model Action for Unitree G1+Inspire hand</b> is referenced from Unitree‘s open-source world-model–action architecture (UnifoLM-WMA-0). We did two changes: (a) Training management method changes from Distributed Data Parallel (DDP) to Deepspeed Zero Stage-3; (b) Replacing Gripper with Inspire hand (DOF: 26).
+</div>
 
 ## 🦾 Real-Robot Demonstrations
-| <img src="assets/gifs/real_z1_stackbox.gif" style="border:none;box-shadow:none;margin:0;padding:0;" /> | <img src="assets/gifs/real_dual_stackbox.gif" style="border:none;box-shadow:none;margin:0;padding:0;" /> |
-|:---:|:---:|
-| <img src="assets/gifs/real_cleanup_pencils.gif" style="border:none;box-shadow:none;margin:0;padding:0;" /> | <img src="assets/gifs/real_g1_pack_camera.gif" style="border:none;box-shadow:none;margin:0;padding:0;" /> |
+| <img src="assets/gifs/1.gif" style="border:none;box-shadow:none;margin:0;padding:0;" /> | <img src="assets/gifs/2.gif" style="border:none;box-shadow:none;margin:0;padding:0;" /> |
 
-**Note: the top-right window shows the world model’s pretion of future action videos.**
 
 ## 📑 Opensource Plan
 - [x] Training 
@@ -31,6 +31,7 @@ pip install -e .
 
 cd external/dlimp
 pip install -e .
+pip install deepspeed==3.16.9
 ```
 ## 🧰 Model Checkpoints
 | Model | Description | Link|
