@@ -42,26 +42,10 @@ pip install deepspeed==3.16.9
 In our experiments, we consider the following two opensource dataset:
 | Dataset | Robot | Link |
 |---------|-------|------|
-|Z1_StackBox| [Unitree Z1](https://www.unitree.com/z1)|[Huggingface](https://huggingface.co/datasets/unitreerobotics/Z1_StackBox_Dataset/tree/v2.1)|
-|Z1_DualArm_StackBox|[Unitree Z1](https://www.unitree.com/z1)|[Huggingface](https://huggingface.co/datasets/unitreerobotics/Z1_Dual_Dex1_StackBox_Dataset/tree/v2.1)|
-|Z1_DualArm_StackBox_V2|[Unitree Z1](https://www.unitree.com/z1)|[Huggingface](https://huggingface.co/datasets/unitreerobotics/Z1_Dual_Dex1_StackBox_Dataset_V2/tree/v2.1)|
-|Z1_DualArm_Cleanup_Pencils|[Unitree Z1](https://www.unitree.com/z1)|[Huggingface](https://huggingface.co/datasets/unitreerobotics/Z1_Dual_Dex1_CleanupPencils_Dataset/tree/v2.1)|
 |metal_part_sort_v5|[Unitree G1](https://www.unitree.com/g1)|[Huggingface](https://huggingface.co/datasets/PID0930/metal_part_sort_v5)|
 |metal_part_sort_v6|[Unitree G1](https://www.unitree.com/g1)|[Huggingface](https://huggingface.co/datasets/PID0930/metal_part_sort_v6)|
 
-
-#### Extra available dataset
-This dataset is collected using the Unitree G1 robot with a 7-DOF dexterous arm, covering a variety of table-top manipulation tasks in both single-arm and dual-arm settings. It is suitable for training video generation models, world models, and other downstream applications. Each episode lasts approximately 30 seconds. Available image resolutions: 256×256 and 128×128.
-
-| Dataset | Robot | Link |
-|---------|-------|------|
-|G1_Dex1_DiverseManip_DualArm_256x256|[Unitree G1](https://www.unitree.com/g1)|[Huggingface](https://huggingface.co/datasets/unitreerobotics/G1_Dex1_DiverseManip_DualArm_256x256)|
-|G1_Dex1_DiverseManip_DualArm_128x128|[Unitree G1](https://www.unitree.com/g1)|[Huggingface](https://huggingface.co/datasets/unitreerobotics/G1_Dex1_DiverseManip_DualArm_128x128)|
-|G1_Dex1_DiverseManip_SingleArm_256x256|[Unitree G1](https://www.unitree.com/g1)|[Huggingface](https://huggingface.co/datasets/unitreerobotics/G1_Dex1_DiverseManip_SingleArm_256x256)|
-|G1_Dex1_DiverseManip_SingleArm_128x128|[Unitree G1](https://www.unitree.com/g1)|[Huggingface](https://huggingface.co/datasets/unitreerobotics/G1_Dex1_DiverseManip_SingleArm_128x128)|
-<br>
-
-To train on your own dataset, first to have the data following the [Huggingface LeRobot V2.1](https://github.com/huggingface/lerobot) dataset format. Assume the dataset’s source directory structure is as follows:
+To train these own datasets, first to have the data following the [Huggingface LeRobot V2.1](https://github.com/huggingface/lerobot) dataset format. Assume the dataset’s source directory structure is as follows:
 ```
 source_dir/
     ├── dataset1_name
