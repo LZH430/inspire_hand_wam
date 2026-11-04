@@ -46,9 +46,9 @@ In our experiments, we consider the following two opensource dataset:
 |Z1_DualArm_StackBox|[Unitree Z1](https://www.unitree.com/z1)|[Huggingface](https://huggingface.co/datasets/unitreerobotics/Z1_Dual_Dex1_StackBox_Dataset/tree/v2.1)|
 |Z1_DualArm_StackBox_V2|[Unitree Z1](https://www.unitree.com/z1)|[Huggingface](https://huggingface.co/datasets/unitreerobotics/Z1_Dual_Dex1_StackBox_Dataset_V2/tree/v2.1)|
 |Z1_DualArm_Cleanup_Pencils|[Unitree Z1](https://www.unitree.com/z1)|[Huggingface](https://huggingface.co/datasets/unitreerobotics/Z1_Dual_Dex1_CleanupPencils_Dataset/tree/v2.1)|
-|metal_part_sort_v5|[Unitree G1](https://www.unitree.com/g1)|[Huggingface](https://huggingface.co/datasets/unitreerobotics/G1_Dex1_MountCameraRedGripper_Dataset/tree/v2.1)|
+|metal_part_sort_v5|[Unitree G1](https://www.unitree.com/g1)|[Huggingface](https://huggingface.co/datasets/PID0930/metal_part_sort_v5)|
 |metal_part_sort_v6|[Unitree G1](https://www.unitree.com/g1)|[Huggingface](https://huggingface.co/datasets/PID0930/metal_part_sort_v6)|
-<img width="682" height="53" alt="image" src="https://github.com/user-attachments/assets/35ea9337-9602-4b1f-badb-883cc38cf21f" />
+
 
 #### Extra available dataset
 This dataset is collected using the Unitree G1 robot with a 7-DOF dexterous arm, covering a variety of table-top manipulation tasks in both single-arm and dual-arm settings. It is suitable for training video generation models, world models, and other downstream applications. Each episode lasts approximately 30 seconds. Available image resolutions: 256×256 and 128×128.
