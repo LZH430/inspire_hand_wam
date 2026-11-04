@@ -119,7 +119,7 @@ bash scripts/train.sh
 ```
 ## 🌏 Inference under Interactive Simulation Mode
 To run the world model in an interactive simulation mode, follow these steps:
-- **Step 1**: (Skip this step if you just would like to test using the examples we provided) Prepare your own prompt following the format used in the [examples/world_model_interaction_prompts](https://github.com/unitreerobotics/unitree-world-model/tree/main/examples/world_model_interaction_prompts):
+- **Step 1**: (Skip this step if you just would like to test using the 'simulationdata' we provided) Prepare your own prompt following the format used in the [examples/world_model_interaction_prompts](https://github.com/unitreerobotics/unitree-world-model/tree/main/examples/world_model_interaction_prompts):
   ```
   world_model_interaction_prompts/
     ├── images
@@ -178,10 +178,10 @@ unitree-world-model/
     ├── configs                     # Configuration files for training and inference
     │    ├── inference
     │    └──  train
-    ├── examples                    # Example inputs and prompts for running inference
     ├── external                    # External packages
     ├── prepare_data                # Scripts for dataset preprocessing and format conversion
     ├── scripts                     # Main scripts for training, evaluation, and deployment
+    ├── simulationdata              # Example inputs and prompts for running inference
     ├── src
     │    ├──unitree_worldmodel      # Core Python package for the Unitree world model
     │    │      ├── data            # Dataset loading, transformations, and dataloaders
@@ -193,11 +193,4 @@ unitree-world-model/
 
 ## 🙏 Acknowledgement
 Lots of code are inherited from [DynamiCrafter](https://github.com/Doubiiu/DynamiCrafter), [Diffusion Policy](https://github.com/real-stanford/diffusion_policy), [ACT](https://github.com/MarkFzp/act-plus-plus) and [HPT](https://github.com/liruiw/HPT).
-
-## 📝 Citation
-```
-@misc{unifolm-wma-0,
-  author       = {Unitree},
-  title        = {UnifoLM-WMA-0: A World-Model-Action (WMA) Framework under UnifoLM Family},
-  year         = {2025},
-}
+The main algorithm is citated from [Unitree](https://github.com/unitreerobotics/unifolm-world-model-action/tree/main) .
