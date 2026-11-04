@@ -94,7 +94,7 @@ A. Our training strategy is outlined as follows:
 **Note**: If you only require $\text{UnifoLM-WMA}$ to operate in a single mode, you may skip the corresponding step.
 
 B. To conduct training on a single or multiple datasets, please follow the steps below:
-- **Step 1**: The maximum DoF is assumed to be 16, if you have more than 16 DoF, update ```agent_state_dim``` and ```agent_action_dim``` in [configs/train/config.yaml](https://github.com/unitreerobotics/unifolm-wma/blob/working/configs/train/config.yaml) ;
+- **Step 1**: The maximum DoF is 26, if you have more than 26 DoF, update ```agent_state_dim``` and ```agent_action_dim``` in [configs/train/config.yaml](https://github.com/unitreerobotics/unifolm-wma/blob/working/configs/train/config.yaml) ;
 - **Step 2**: Set up the input shapes for each modality in [configs/train/meta.json](https://github.com/unitreerobotics/unitree-world-model/blob/main/configs/train/meta.json);
 - **Step 3**: Configure the training parameters in [configs/train/config.yaml](https://github.com/unitreerobotics/unitree-world-model/blob/main/configs/train/config.yaml). For the ```pretrained_checkpoint```, we recommend using the checkpoint " $\text{UnifoLM-WMA-0}_{Base}$ " fine-tuned on the [Open-X](https://robotics-transformer-x.github.io/) dataset;
   ```yaml
@@ -109,11 +109,8 @@ B. To conduct training on a single or multiple datasets, please follow the steps
           ...
           data_dir: /path/to/training/dataset/directory
       dataset_and_weights: # list the name of each dataset below and make sure the summation of weights is 1.0
-          dataset1_name: 0.2
-          dataset2_name: 0.2
-          dataset3_name: 0.2
-          dataset4_name: 0.2
-          dataset5_name: 0.2
+          dataset1_name: 0.5
+          dataset2_name: 0.5
   ```
 - **Step 4**: Setup ```experiment_name```, ```save_root``` variables in [scripts/train.sh](https://github.com/unitreerobotics/unitree-world-model/blob/main/scripts/train.sh);
 - **Step 5**: Launch the training with the command:
