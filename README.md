@@ -1,4 +1,4 @@
-# UnifoLM-World Model Action for Unitree G1+Inspire hand
+# inspire_hand_wam: UnifoLM-World Model Action for Unitree G1+Inspire hand
 <div align="justify">
     <b>UnifoLM-World Model Action for Unitree G1+Inspire hand</b> is referenced from Unitree‘s open-source world-model–action architecture (UnifoLM-WMA-0). We did two changes: (a) Training management method changes from Distributed Data Parallel (DDP) to Deepspeed Zero Stage-3; (b) Replacing Gripper with Inspire hand (DOF: 26).
 </div>
