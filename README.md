@@ -37,17 +37,18 @@ pip install deepspeed==3.16.9
 | Model | Description | Link|
 |---------|-------|------|
 |$\text{UnifoLM-WMA-0}_{Base}$| Fine-tuned on [Open-X](https://robotics-transformer-x.github.io/) dataset. | [HuggingFace](https://huggingface.co/unitreerobotics/UnifoLM-WMA-0-Base)|
-|$\text{UnifoLM-WMA-0}_{Dual}$| Fine-tuned on five [Unitree opensource dataset](https://huggingface.co/collections/unitreerobotics/g1-dex1-datasets-68bae98bf0a26d617f9983ab) in both decision-making and simulation modes. | [HuggingFace](https://huggingface.co/unitreerobotics/UnifoLM-WMA-0-Dual)|
 
 ## 🛢️ Dataset
-In our experiments, we consider the following five opensource dataset:
+In our experiments, we consider the following two opensource dataset:
 | Dataset | Robot | Link |
 |---------|-------|------|
 |Z1_StackBox| [Unitree Z1](https://www.unitree.com/z1)|[Huggingface](https://huggingface.co/datasets/unitreerobotics/Z1_StackBox_Dataset/tree/v2.1)|
 |Z1_DualArm_StackBox|[Unitree Z1](https://www.unitree.com/z1)|[Huggingface](https://huggingface.co/datasets/unitreerobotics/Z1_Dual_Dex1_StackBox_Dataset/tree/v2.1)|
 |Z1_DualArm_StackBox_V2|[Unitree Z1](https://www.unitree.com/z1)|[Huggingface](https://huggingface.co/datasets/unitreerobotics/Z1_Dual_Dex1_StackBox_Dataset_V2/tree/v2.1)|
 |Z1_DualArm_Cleanup_Pencils|[Unitree Z1](https://www.unitree.com/z1)|[Huggingface](https://huggingface.co/datasets/unitreerobotics/Z1_Dual_Dex1_CleanupPencils_Dataset/tree/v2.1)|
-|G1_Pack_Camera|[Unitree G1](https://www.unitree.com/g1)|[Huggingface](https://huggingface.co/datasets/unitreerobotics/G1_Dex1_MountCameraRedGripper_Dataset/tree/v2.1)|
+|metal_part_sort_v5|[Unitree G1](https://www.unitree.com/g1)|[Huggingface](https://huggingface.co/datasets/unitreerobotics/G1_Dex1_MountCameraRedGripper_Dataset/tree/v2.1)|
+|metal_part_sort_v6|[Unitree G1](https://www.unitree.com/g1)|[Huggingface](https://huggingface.co/datasets/PID0930/metal_part_sort_v6)|
+<img width="682" height="53" alt="image" src="https://github.com/user-attachments/assets/35ea9337-9602-4b1f-badb-883cc38cf21f" />
 
 #### Extra available dataset
 This dataset is collected using the Unitree G1 robot with a 7-DOF dexterous arm, covering a variety of table-top manipulation tasks in both single-arm and dual-arm settings. It is suitable for training video generation models, world models, and other downstream applications. Each episode lasts approximately 30 seconds. Available image resolutions: 256×256 and 128×128.
