@@ -117,6 +117,14 @@ B. To conduct training on a single or multiple datasets, please follow the steps
 ```
 bash scripts/train.sh
 ```
+- **Step 6**: Launch the training with the command to merge 8 checkpoint clips:
+```
+python -m merge_pt.py
+```
+- **Step 6**: Convert checkpoint form to ckpt from pt:
+```
+python -m convert_ckpt.py
+```
 ## 🌏 Inference under Interactive Simulation Mode
 To run the world model in an interactive simulation mode, follow these steps:
 - **Step 1**: (Skip this step if you just would like to test using the 'simulationdata' we provided) Prepare your own prompt following the format used in the [examples/world_model_interaction_prompts](https://github.com/unitreerobotics/unitree-world-model/tree/main/examples/world_model_interaction_prompts):
