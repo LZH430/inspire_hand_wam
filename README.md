@@ -3,6 +3,8 @@
     <b>UnifoLM-World Model Action for Unitree G1+Inspire hand</b> is referenced from Unitree‘s open-source world-model–action architecture (UnifoLM-WMA-0). We did two changes: (a) Training management method changes from Distributed Data Parallel (DDP) to Deepspeed Zero Stage-3; (b) Replacing Gripper with Inspire hand (DOF: 26).
 </div>
 
+Technical configuration: we use server to train it (8 Nvidia 4090 24GB GPUs).
+
 ## 🦾 Real-Robot Demonstrations
 | <img src="assets/gifs/1.gif" style="border:none;box-shadow:none;margin:0;padding:0;" /> | <img src="assets/gifs/2.gif" style="border:none;box-shadow:none;margin:0;padding:0;" /> |
 
