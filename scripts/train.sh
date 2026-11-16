@@ -15,7 +15,7 @@ name="inspirehand"
 config_file=configs/train/config.yaml
 
 # save root dir for logs, checkpoints, tensorboard record, etc.
-save_root="/run/determined/workdir/home/unifolm-world-model-action/results"
+save_root="your results dataset path"
 
 mkdir -p $save_root/$name
 
