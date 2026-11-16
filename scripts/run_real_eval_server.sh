@@ -2,7 +2,7 @@ model_name=testing
 ckpt=/run/determined/workdir/home/unifolm-world-model-action/step47200.ckpt
 config=configs/inference/world_model_decision_making.yaml
 seed=123
-res_dir="/run/determined/workdir/home/unifolm-world-model-action/results"
+res_dir="your results dataset path"
 datasets=(
     "metal_part_sort_v5"
     "metal_part_sort_v6"
