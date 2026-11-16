@@ -35,7 +35,7 @@ cd external/dlimp
 pip install -e .
 pip install deepspeed==3.16.9
 ```
-## 🧰 Model Checkpoints
+## 🧰 Model Base Checkpoints
 | Model | Description | Link|
 |---------|-------|------|
 |$\text{UnifoLM-WMA-0}_{Base}$| Fine-tuned on [Open-X](https://robotics-transformer-x.github.io/) dataset. | [HuggingFace](https://huggingface.co/unitreerobotics/UnifoLM-WMA-0-Base)|
