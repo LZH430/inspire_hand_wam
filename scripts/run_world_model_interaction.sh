@@ -26,7 +26,7 @@ for i in "${!datasets[@]}"; do
     --unconditional_guidance_scale 1.0 \
     --ddim_steps 50 \
     --ddim_eta 1.0 \
-    --prompt_dir "/run/determined/workdir/home/unifolm-world-model-action/simulationdata" \
+    --prompt_dir "the path for simulationdata" \
     --dataset ${dataset} \
     --video_length 16 \
     --frame_stride ${fs} \
